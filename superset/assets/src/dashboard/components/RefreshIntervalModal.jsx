@@ -36,6 +36,7 @@ const defaultProps = {
 
 const options = [
   [0, t("Don't refresh")],
+  [2, t('2 seconds')],
   [10, t('10 seconds')],
   [30, t('30 seconds')],
   [60, t('1 minute')],
