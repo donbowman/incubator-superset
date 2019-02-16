@@ -1,0 +1,98 @@
+---
+image: python:3.6-stretch
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .npm
+    - superset/assets/.terser-plugin-cache
+    - superset/assets/node_modules
+
+stages:
+  - test
+before_script:
+  - curl -sL https://deb.nodesource.com/setup_10.x | bash -
+  - apt-get update
+  - apt-get -y install nodejs wget git libffi-dev build-essential nodejs xvfb libxtst-dev
+  - apt-get -y install xvfb libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2
+  - pip install tox codecov
+  - npm config set cache $CI_PROJECT_DIR/.npm
+
+test_cypress_dashboard:
+  stage: test
+  tags: ['big']
+  artifacts:
+    when: always
+    paths:
+      - superset/assets/cypress/screenshots
+      - _logs
+  script: |
+    timeout 10m bash -c "tox -e cypress-dashboard"
+
+test_cypress_explore:
+  stage: test
+  tags: ['big']
+  artifacts:
+    when: always
+    paths:
+      - superset/assets/cypress/screenshots
+      - _logs
+  script: |
+    timeout 10m bash -c "tox -e cypress-explore"
+
+test_cypress_sqllab:
+  stage: test
+  tags: ['big']
+  artifacts:
+    when: always
+    paths:
+      - superset/assets/cypress/screenshots
+      - _logs
+  script: |
+    timeout 10m bash -c "tox -e cypress-sqllab"
+
+test_cypress_eslint:
+  stage: test
+  tags: ['big']
+  artifacts:
+    when: always
+    paths:
+      - superset/assets/cypress/screenshots
+      - _logs
+  script: |
+    npm install -g eslint-plugin-cypress
+    (cd superset/assets; npm ci)
+    tox -e eslint
+
+test_cypress_flake8:
+  stage: test
+  tags: ['big']
+  artifacts:
+    when: always
+    paths:
+      - superset/assets/cypress/screenshots
+      - _logs
+  script: |
+    tox -e flake8
+
+test_cypress_javascript:
+  stage: test
+  tags: ['big']
+  artifacts:
+    when: always
+    paths:
+      - superset/assets/cypress/screenshots
+      - _logs
+  script: |
+    tox -e javascript
+
+test_cypress_pylint:
+  stage: test
+  tags: ['big']
+  artifacts:
+    when: always
+    paths:
+      - superset/assets/cypress/screenshots
+      - _logs
+  script: |
+    tox -e pylint

@@ -1,5 +1,6 @@
 .gitignore
 .gitattributes
+.gitlab-ci.yml
 .coverage
 .coveragerc
 .codecov.yml
