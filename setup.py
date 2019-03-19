@@ -100,7 +100,7 @@ setup(
         'retry>=0.9.2',
         'selenium>=3.141.0',
         'simplejson>=3.15.0',
-        'sqlalchemy',
+        'sqlalchemy>=1.2.18, <1.3.0',
         'sqlalchemy-utils',
         'sqlparse',
         'unicodecsv',
@@ -120,7 +120,7 @@ setup(
     },
     author='Apache Software Foundation',
     author_email='dev@superset.incubator.apache.org',
-    url='http://superset.apache.org/',
+    url='https://superset.apache.org/',
     download_url=(
         'https://dist.apache.org/repos/dist/release/superset/' + version_string
     ),

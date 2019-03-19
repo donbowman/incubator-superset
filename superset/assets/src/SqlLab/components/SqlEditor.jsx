@@ -60,12 +60,14 @@ const propTypes = {
   hideLeftBar: PropTypes.bool,
   defaultQueryLimit: PropTypes.number.isRequired,
   maxRow: PropTypes.number.isRequired,
+  saveQueryWarning: PropTypes.string,
 };
 
 const defaultProps = {
   database: null,
   latestQuery: null,
   hideLeftBar: false,
+  saveQueryWarning: null,
 };
 
 class SqlEditor extends React.PureComponent {
@@ -122,7 +124,7 @@ class SqlEditor extends React.PureComponent {
   }
   // One layer of abstraction for easy spying in unit tests
   getSqlEditorHeight() {
-    return this.sqlEditorRef.current.clientHeight;
+    return this.sqlEditorRef.current ? this.sqlEditorRef.current.clientHeight : 0;
   }
   // Return the heights for the ace editor and the south pane as an object
   // given the height of the sql editor, north pane percent and south pane percent.
@@ -309,6 +311,7 @@ class SqlEditor extends React.PureComponent {
                 onSave={this.props.actions.saveQuery}
                 schema={qe.schema}
                 dbId={qe.dbId}
+                saveQueryWarning={this.props.saveQueryWarning}
               />
             </span>
             <span className="m-r-5">

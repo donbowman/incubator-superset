@@ -23,6 +23,7 @@ import React from 'react';
 import { ChartProps, SuperChart } from '@superset-ui/chart';
 import { Tooltip } from 'react-bootstrap';
 import { Logger, LOG_ACTIONS_RENDER_CHART } from '../logger/LogUtils';
+import transformBigNumber from './transformBigNumber';
 
 const propTypes = {
   annotationData: PropTypes.object,
@@ -67,9 +68,10 @@ class ChartRenderer extends React.Component {
     this.handleAddFilter = this.handleAddFilter.bind(this);
     this.handleRenderSuccess = this.handleRenderSuccess.bind(this);
     this.handleRenderFailure = this.handleRenderFailure.bind(this);
+    this.preTransformProps = this.preTransformProps.bind(this);
   }
 
-  shouldComponentUpdate(nextProps) {
+  shouldComponentUpdate(nextProps, nextState) {
     const resultsReady =
       nextProps.queryResponse &&
       ['success', 'rendered'].indexOf(nextProps.chartStatus) > -1 &&
@@ -84,6 +86,7 @@ class ChartRenderer extends React.Component {
         nextProps.annotationData !== this.props.annotationData ||
         nextProps.height !== this.props.height ||
         nextProps.width !== this.props.width ||
+        nextState.tooltip !== this.state.tooltip ||
         nextProps.triggerRender) {
         return true;
       }
@@ -163,6 +166,18 @@ class ChartRenderer extends React.Component {
     }
   }
 
+  preTransformProps(chartProps) {
+    const payload = chartProps.payload;
+    const data = transformBigNumber(payload.data);
+    return new ChartProps({
+      ...chartProps,
+      payload: {
+        ...payload,
+        data,
+      },
+    });
+  }
+
   renderTooltip() {
     const { tooltip } = this.state;
     if (tooltip && tooltip.content) {
@@ -208,6 +223,7 @@ class ChartRenderer extends React.Component {
           className={`${snakeCase(vizType)}`}
           chartType={vizType}
           chartProps={skipChartRendering ? null : this.prepareChartProps()}
+          preTransformProps={this.preTransformProps}
           onRenderSuccess={this.handleRenderSuccess}
           onRenderFailure={this.handleRenderFailure}
         />

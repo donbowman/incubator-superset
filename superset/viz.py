@@ -1184,10 +1184,6 @@ class NVD3TimeSeriesViz(NVD3Viz):
             dfs.sort_values(ascending=False, inplace=True)
             df = df[dfs.index]
 
-        if fd.get('contribution'):
-            dft = df.T
-            df = (dft / dft.sum()).T
-
         rolling_type = fd.get('rolling_type')
         rolling_periods = int(fd.get('rolling_periods') or 0)
         min_periods = int(fd.get('min_periods') or 0)
@@ -1206,6 +1202,10 @@ class NVD3TimeSeriesViz(NVD3Viz):
             df = df.cumsum()
         if min_periods:
             df = df[min_periods:]
+
+        if fd.get('contribution'):
+            dft = df.T
+            df = (dft / dft.sum()).T
 
         return df
 
@@ -1982,6 +1982,8 @@ class MapboxViz(BaseViz):
         label_col = fd.get('mapbox_label')
 
         if not fd.get('groupby'):
+            if fd.get('all_columns_x') is None or fd.get('all_columns_y') is None:
+                raise Exception(_('[Longitude] and [Latitude] must be set'))
             d['columns'] = [fd.get('all_columns_x'), fd.get('all_columns_y')]
 
             if label_col and len(label_col) >= 1:
@@ -2032,6 +2034,9 @@ class MapboxViz(BaseViz):
             if fd.get('point_radius') == 'Auto'
             else df[fd.get('point_radius')])
 
+        # limiting geo precision as long decimal values trigger issues
+        # around json-bignumber in Mapbox
+        GEO_PRECISION = 10
         # using geoJSON formatting
         geo_json = {
             'type': 'FeatureCollection',
@@ -2044,7 +2049,10 @@ class MapboxViz(BaseViz):
                     },
                     'geometry': {
                         'type': 'Point',
-                        'coordinates': [lon, lat],
+                        'coordinates': [
+                            round(lon, GEO_PRECISION),
+                            round(lat, GEO_PRECISION),
+                        ],
                     },
                 }
                 for lon, lat, metric, point_radius

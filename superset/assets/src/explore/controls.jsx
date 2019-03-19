@@ -546,6 +546,7 @@ export const controls = {
     choices: [
       'Belgium',
       'Brazil',
+      'Bulgaria',
       'China',
       'Egypt',
       'France',
@@ -1966,7 +1967,7 @@ export const controls = {
     default: null,
     description: '',
     mapStateToProps: state => ({
-      columns: state.datasource ? state.datasource.columns : [],
+      columns: state.datasource ? state.datasource.columns.filter(c => c.filterable) : [],
       savedMetrics: state.datasource ? state.datasource.metrics : [],
       datasource: state.datasource,
     }),

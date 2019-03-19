@@ -160,10 +160,8 @@ AUTH_TYPE = AUTH_DB
 
 # Uncomment to setup OpenID providers example for OpenID authentication
 # OPENID_PROVIDERS = [
-#    { 'name': 'Yahoo', 'url': 'https://me.yahoo.com' },
-#    { 'name': 'AOL', 'url': 'http://openid.aol.com/<username>' },
-#    { 'name': 'Flickr', 'url': 'http://www.flickr.com/<username>' },
-#    { 'name': 'MyOpenID', 'url': 'https://www.myopenid.com' }]
+#    { 'name': 'Yahoo', 'url': 'https://open.login.yahoo.com/' },
+#    { 'name': 'Flickr', 'url': 'https://www.flickr.com/<username>' },
 
 # ---------------------------------------------------
 # Roles config
@@ -203,6 +201,22 @@ LANGUAGES = {
 # and FEATURE_FLAGS = { 'BAR': True, 'BAZ': True } in superset_config.py
 # will result in combined feature flags of { 'FOO': True, 'BAR': True, 'BAZ': True }
 DEFAULT_FEATURE_FLAGS = {}
+
+# A function that receives a dict of all feature flags
+# (DEFAULT_FEATURE_FLAGS merged with FEATURE_FLAGS)
+# can alter it, and returns a similar dict. Note the dict of feature
+# flags passed to the function is a deepcopy of the dict in the config,
+# and can therefore be mutated without side-effect
+#
+# GET_FEATURE_FLAGS_FUNC can be used to implement progressive rollouts,
+# role-based features, or a full on A/B testing framework.
+#
+# from flask import g, request
+# def GET_FEATURE_FLAGS_FUNC(feature_flags_dict):
+#     feature_flags_dict['some_feature'] = g.user and g.user.id == 5
+#     return feature_flags_dict
+GET_FEATURE_FLAGS_FUNC = None
+
 
 # ---------------------------------------------------
 # Image and file configuration
@@ -292,7 +306,7 @@ ADDITIONAL_MODULE_DS_MAP = {}
 ADDITIONAL_MIDDLEWARE = []
 
 """
-1) http://docs.python-guide.org/en/latest/writing/logging/
+1) https://docs.python-guide.org/writing/logging/
 2) https://docs.python.org/2/library/logging.config.html
 """
 
@@ -339,6 +353,9 @@ DEFAULT_SQLLAB_LIMIT = 1000
 
 # Maximum number of tables/views displayed in the dropdown window in SQL Lab.
 MAX_TABLE_NAMES = 3000
+
+# Adds a warning message on sqllab save query modal.
+SQLLAB_SAVE_WARNING_MESSAGE = None
 
 # If defined, shows this text in an alert-warning box in the navbar
 # one example use case may be "STAGING" to make it clear that this is
@@ -459,7 +476,7 @@ SMTP_MAIL_FROM = 'superset@superset.com'
 if not CACHE_DEFAULT_TIMEOUT:
     CACHE_DEFAULT_TIMEOUT = CACHE_CONFIG.get('CACHE_DEFAULT_TIMEOUT')
 
-# Whether to bump the logging level to ERRROR on the flask_appbiulder package
+# Whether to bump the logging level to ERROR on the flask_appbuilder package
 # Set to False if/when debugging FAB related issues like
 # permission management
 SILENCE_FAB = True

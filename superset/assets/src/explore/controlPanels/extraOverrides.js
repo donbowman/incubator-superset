@@ -16,27 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { t } from '@superset-ui/translation';
-
-export default {
-  controlPanelSections: [
-    {
-      label: t('Query'),
-      expanded: true,
-      controlSetRows: [
-        ['metrics'],
-        ['adhoc_filters'],
-        ['groupby'],
-        ['limit'],
-      ],
-    },
-    {
-      label: t('Chart Options'),
-      expanded: true,
-      controlSetRows: [
-        ['color_scheme'],
-        ['whisker_options', 'x_ticks_layout'],
-      ],
-    },
-  ],
-};
+// For individual deployments to add custom overrides
+export default function extraOverrides(controlPanelConfigs) {
+  return controlPanelConfigs;
+}
